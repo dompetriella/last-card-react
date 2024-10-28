@@ -19,12 +19,12 @@ interface CardGameState {
 
 export const useCardGameStore = create<CardGameState>((set) => ({
   playerHand: [
-    new CardData(CardColor.Blue, 1)
+    
   ],
   drawPile: [],
-  currentActiveCard: new CardData(CardColor.Blue, 1),
+  currentActiveCard: null,
   discardPile: [],
-  opponentHand: [new CardData(CardColor.Blue, 1)],
+  opponentHand: [],
 
   // setCurrentActiveCard: (card: CardData) => set({ currentActiveCard: card }),
   // setPlayerHand: (cards) => set({ playerHand: cards }),
