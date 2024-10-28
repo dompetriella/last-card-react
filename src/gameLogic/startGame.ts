@@ -1,9 +1,9 @@
 import { CardColor, CardData } from "../models/cardData";
 
-function generateStartingDeck(): CardData[] {
+export function generateStartingDeck(): CardData[] {
   let cards: CardData[] = []
   for (const colorValue of Object.values(CardColor)) {
-    for (let index = 0; index < 9; index++) {
+    for (let index = 0; index < 10; index++) {
       cards.push(new CardData(colorValue, index))
     }
   }

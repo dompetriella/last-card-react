@@ -1,5 +1,7 @@
 import  { create } from "zustand";
 import { CardColor, CardData } from "../models/cardData";
+import { generateStartingDeck } from "../gameLogic/startGame";
+import { lastIndexOf } from "lodash";
 
 interface CardGameState {
   playerHand: CardData[];
@@ -8,7 +10,11 @@ interface CardGameState {
   discardPile: CardData[];
   opponentHand: CardData[];
 
-  // setCurrentActiveCard: (card: CardData | null) => void;
+  startGame: () => void
+  setCurrentActiveCard: (card: CardData) => void
+  drawCardAndAddToPlayerHand: () => void
+
+ 
   // Actions to modify the state
   // setPlayerHand: (cards: Card[]) => void;
   // addToDrawPile: (card: Card) => void;
@@ -17,7 +23,7 @@ interface CardGameState {
   // setOpponentHand: (cards: Card[]) => void;
 }
 
-export const useCardGameStore = create<CardGameState>((set) => ({
+export const useCardGameStore = create<CardGameState>((set, get) => ({
   playerHand: [
     
   ],
@@ -26,7 +32,26 @@ export const useCardGameStore = create<CardGameState>((set) => ({
   discardPile: [],
   opponentHand: [],
 
-  // setCurrentActiveCard: (card: CardData) => set({ currentActiveCard: card }),
+  startGame() {
+    set({drawPile: generateStartingDeck()})
+  },
+
+  setCurrentActiveCard: (card: CardData) => set({ currentActiveCard: card }),
+  drawCardAndAddToPlayerHand() {
+    let drawPile = get().drawPile
+    const playerHand = get().playerHand;
+    if (drawPile.length === 0) {
+
+    }
+    let lastIndex = drawPile.length-1
+    let card: CardData = drawPile[lastIndex];
+    set({ drawPile: drawPile.slice(0, lastIndex) });
+    if (card == null) {
+      console.log(card)
+    } 
+
+    set({ playerHand: [...playerHand, card]})
+  },
   // setPlayerHand: (cards) => set({ playerHand: cards }),
   // addToDrawPile: (card) => set((state) => ({ drawPile: [...state.drawPile, card] })),
   // addToDiscardPile: (card) => set((state) => ({ discardPile: [...state.discardPile, card] })),
