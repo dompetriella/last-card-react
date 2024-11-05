@@ -1,18 +1,17 @@
 import  { create } from "zustand";
-import { CardColor, CardData } from "../models/cardData";
+import {  CardData } from "../models/cardData";
 import { generateStartingDeck } from "../gameLogic/startGame";
-import { lastIndexOf } from "lodash";
+import { Player } from "../models/player";
 
 interface CardGameState {
-  playerHand: CardData[];
+  players: Player[];
   drawPile: CardData[];
   currentActiveCard: CardData | null;
   discardPile: CardData[];
-  opponentHand: CardData[];
 
   startGame: () => void
   setCurrentActiveCard: (card: CardData) => void
-  drawCardAndAddToPlayerHand: () => void
+  drawCardAndAddToPlayerHand: (playerId: number) => void
 
  
   // Actions to modify the state
@@ -24,8 +23,8 @@ interface CardGameState {
 }
 
 export const useCardGameStore = create<CardGameState>((set, get) => ({
-  playerHand: [
-    
+  players: [
+    new Player({id: 0}), new Player({id: 1})
   ],
   drawPile: [],
   currentActiveCard: null,
@@ -34,23 +33,36 @@ export const useCardGameStore = create<CardGameState>((set, get) => ({
 
   startGame() {
     set({drawPile: generateStartingDeck()})
+    const playerIds: Array<number> = get().players.map(player => player.id);
+    for (const id of playerIds) {
+      for (let index = 0; index < 7; index++) {
+        get().drawCardAndAddToPlayerHand(id)
+      }
+      
+    }
   },
 
   setCurrentActiveCard: (card: CardData) => set({ currentActiveCard: card }),
-  drawCardAndAddToPlayerHand() {
+  drawCardAndAddToPlayerHand(playerId: number) {
     let drawPile = get().drawPile
-    const playerHand = get().playerHand;
+    let players = get().players;
+    const player = players.filter((p) => p.id === playerId)[0];
     if (drawPile.length === 0) {
-
+      return;
     }
     let lastIndex = drawPile.length-1
     let card: CardData = drawPile[lastIndex];
     set({ drawPile: drawPile.slice(0, lastIndex) });
     if (card == null) {
       console.log(card)
+      return;
     } 
 
-    set({ playerHand: [...playerHand, card]})
+    const playerWithUpdatedHand = player.copyWith({cards: [...player.cards, card]})
+    const playerIndex = players.findIndex((p) => p.id == playerId);
+    players[playerIndex] = playerWithUpdatedHand;
+
+    set({players: players})
   },
   // setPlayerHand: (cards) => set({ playerHand: cards }),
   // addToDrawPile: (card) => set((state) => ({ drawPile: [...state.drawPile, card] })),
