@@ -34,7 +34,7 @@ export const useCardGameStore = create<CardGameState>((set, get) => ({
     // deal hands to players
     const playerIds: Array<number> = get().players.map(player => player.id);
     for (const id of playerIds) {
-      for (let index = 0; index < 7; index++) {
+      for (let index = 0; index < 3; index++) {
         const card: CardData | null = get().drawCardFromDrawPile();
         if (card !== null) {
            get().addCardToPlayerHand(id, card);
@@ -70,7 +70,7 @@ export const useCardGameStore = create<CardGameState>((set, get) => ({
       return card;
     }
     let playerCards: CardData[] = playerById.cards;
-    const updatedPlayerCards: CardData[] = playerCards.filter(c => c.id == card.id);
+    const updatedPlayerCards: CardData[] = playerCards.filter(c => c.id !== card.id);
     const updatedPlayer: Player = playerById.copyWith({cards: updatedPlayerCards});
     set({ players: players.map(player => (player.id === playerId ? updatedPlayer : player))})
     return card;
@@ -79,7 +79,7 @@ export const useCardGameStore = create<CardGameState>((set, get) => ({
   //
   addCardToPlayPile(card: CardData) {
     const playPile: CardData[] = get().playPile;
-    set({playPile: [card, ...playPile]})
+    set({playPile: [ ...playPile, card]})
   },
   addCardToPlayerHand(playerId: number, card: CardData) {
     const players: Player[] = get().players;
