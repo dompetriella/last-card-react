@@ -1,16 +1,17 @@
 import { act } from "react";
 import "./App.css";
 import Card from "./components/card";
-import { CardData } from "./models/cardData";
+import { CardColor, CardData } from "./models/cardData";
 import useCardGameStore from "./state/cardGameStore";
 
 function App() {
-  const discardPile = useCardGameStore((state) => state.discardPile);
   const drawPile = useCardGameStore((state) => state.drawPile);
-  const activeCard = useCardGameStore((state) => state.currentActiveCard);
+  const playPile = useCardGameStore((state) => state.playPile);
   const players = useCardGameStore((state) => state.players);
 
   const startGameAction = useCardGameStore((state) => state.startGame);
+
+  console.log(playPile);
 
   return (
     <>
@@ -21,27 +22,34 @@ function App() {
         >
           Start Game
         </button>
-        <div className="flex justify-center items-center  h-1/2  bg-green-400 size-full">
-          {players[1].cards.map((card: CardData) => (
-            <Card cardData={card} isSmall={true} />
-          ))}
-        </div>
-        <div className="flex justify-center items-center bg-blue-400 size-full">
-          {drawPile.map((card: CardData) => (
-            <div className="absolute">
-              <Card cardData={card} isFaceUp={true} />
-            </div>
-          ))}
 
-          {activeCard != null ? (
-            <Card cardData={activeCard!} isFaceUp={true} />
-          ) : (
-            <div className="w-24"></div>
-          )}
-          <div>
-            {discardPile.map((card: CardData) => (
-              <Card cardData={card} isSmall={true} />
+        <div className="flex justify-center items-center  h-1/2  bg-green-400 size-full">
+          {players.length > 0
+            ? players[1].cards.map((card: CardData) => (
+                <Card cardData={card} isSmall={true} />
+              ))
+            : null}
+        </div>
+
+        <div className="flex justify-center items-center bg-blue-400 size-full">
+          <div className="flex size-full  justify-end  items-center">
+            {drawPile.map((card: CardData) => (
+              <div className="absolute">
+                <Card cardData={card} />
+              </div>
             ))}
+          </div>
+          <div className="w-16"></div>
+          <div className="flex size-full justify-start items-center">
+            {playPile.length > 0 ? (
+              playPile.map((card: CardData) => (
+                <div className="absolute">
+                  <Card cardData={card} isFaceUp={true} />
+                </div>
+              ))
+            ) : (
+              <Card cardData={new CardData(1, CardColor.Blue, 0)} />
+            )}
           </div>
         </div>
         <div className="flex items-center justify-center">
@@ -51,9 +59,11 @@ function App() {
         </div>
         <div className="flex bg-red-400 w-screen h-1/3 justify-start p-4">
           <div className="flex justify-center w-full min-h-60">
-            {players[0].cards.map((card: CardData) => (
-              <Card cardData={card} isFaceUp={true} isPlayerOwned={true} />
-            ))}
+            {players.length > 0
+              ? players[0].cards.map((card: CardData) => (
+                  <Card cardData={card} isFaceUp={true} isPlayerOwned={true} />
+                ))
+              : null}
           </div>
         </div>
       </div>
